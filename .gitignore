@@ -7,3 +7,6 @@ data/processed/
 data/raw/*.txt
 data/raw/*.zip
 references/
+.env
+.env.*
+!.env.example
