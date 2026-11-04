@@ -3,6 +3,8 @@ import os
 import urllib.request
 from pathlib import Path
 
+from validate_llm_output import validate_text
+
 
 def main() -> None:
     api_key = os.environ.get("LLM_API_KEY")
@@ -39,6 +41,11 @@ def main() -> None:
         result = json.loads(response.read().decode("utf-8"))
 
     answer = result["choices"][0]["message"]["content"]
+    missing, forbidden = validate_text(answer)
+    if missing or forbidden:
+        raise SystemExit(
+            f"LLM 输出未通过安全校验。缺少: {missing}; 禁止内容: {forbidden}"
+        )
     output_path = Path("artifacts/llm_diagnostic_unit_18.md")
     output_path.write_text(answer, encoding="utf-8")
     print(f"大模型诊断已保存: {output_path}")
