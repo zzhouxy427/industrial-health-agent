@@ -4,6 +4,7 @@ import argparse
 import pandas as pd
 
 from config import RISK_THRESHOLD
+from data_quality import assess_unit_quality
 from retrieve_guidance import retrieve_guidance
 
 
@@ -50,6 +51,8 @@ def main() -> None:
     predicted_rul = prediction["predicted_rul"]
     lower_rul = prediction["prediction_p10"]
     upper_rul = prediction["prediction_p90"]
+    quality = assess_unit_quality(unit_number)
+    quality_status = "通过" if quality["passed"] else "需要人工复核"
     if predicted_rul <= threshold:
         risk = "高风险：建议人工检查"
     elif predicted_rul <= 2 * threshold:
@@ -73,6 +76,7 @@ def main() -> None:
 - 预测区间（80% 经验区间）：{lower_rul:.1f} 至 {upper_rul:.1f} cycles
 - 风险等级：{risk}
 - 风险阈值：{threshold} cycles
+- 数据质量：{quality_status}（范围提示比例 {quality['outside_ratio']:.2%}）
 - 趋势复核：{trend_warning}
 
 ## 传感器趋势

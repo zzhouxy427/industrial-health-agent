@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 
 from config import RISK_THRESHOLD
+from data_quality import assess_unit_quality
 from retrieve_guidance import retrieve_guidance
 
 
@@ -50,6 +51,7 @@ def main() -> None:
         )
 
     predicted_rul = float(prediction["predicted_rul"])
+    quality = assess_unit_quality(args.unit)
     threshold = RISK_THRESHOLD
     if predicted_rul <= threshold:
         risk_level = "high"
@@ -67,6 +69,11 @@ def main() -> None:
             "upper": round(float(prediction["prediction_p90"]), 3),
         },
         "prediction_std": round(float(prediction["prediction_std"]), 3),
+        "data_quality": {
+            "passed": quality["passed"],
+            "outside_ratio": round(float(quality["outside_ratio"]), 4),
+            "range_warning": quality["range_warning"],
+        },
         "risk_threshold": threshold,
         "risk_level": risk_level,
         "trend_warning": all(change > 0 for change in changes),

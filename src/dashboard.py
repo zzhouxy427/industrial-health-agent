@@ -8,6 +8,7 @@ import pandas as pd
 import streamlit as st
 
 from config import RISK_THRESHOLD
+from data_quality import assess_unit_quality
 
 
 RAW_COLUMNS = [
@@ -62,6 +63,15 @@ def main() -> None:
         "80% 预测区间："
         f"{float(row['prediction_p10']):.1f} 至 {float(row['prediction_p90']):.1f} cycles"
     )
+
+    quality = assess_unit_quality(unit)
+    if quality["passed"]:
+        st.success(
+            "数据质量通过："
+            f"范围提示比例 {quality['outside_ratio']:.2%}（阈值 2.00%）"
+        )
+    else:
+        st.warning("数据质量需要人工复核；请先检查输入数据，再参考预测结果。")
 
     st.subheader("传感器趋势")
     trajectory = test_data.loc[test_data["unit_number"] == unit].set_index("cycle")
