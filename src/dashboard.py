@@ -18,12 +18,10 @@ RAW_COLUMNS = [
     "op_setting_3",
     *[f"sensor_{index}" for index in range(1, 22)],
 ]
-@st.cache_data
 def load_predictions() -> pd.DataFrame:
     return pd.read_csv("artifacts/fd001_predictions.csv")
 
 
-@st.cache_data
 def load_test_data() -> pd.DataFrame:
     return pd.read_csv(
         "data/raw/test_FD001.txt",
@@ -60,6 +58,10 @@ def main() -> None:
     metric_2.metric("风险阈值", f"{RISK_THRESHOLD} cycles")
     metric_3.metric("风险等级", risk_level)
     st.info(f"当前建议：{recommended_action}。传感器趋势仍需结合诊断报告人工判断。")
+    st.caption(
+        "80% 预测区间："
+        f"{float(row['prediction_p10']):.1f} 至 {float(row['prediction_p90']):.1f} cycles"
+    )
 
     st.subheader("传感器趋势")
     trajectory = test_data.loc[test_data["unit_number"] == unit].set_index("cycle")

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from model_factory import build_rul_model
+from prediction_uncertainty import predict_with_uncertainty
 from train_engineered import build_features
 
 
@@ -32,7 +33,9 @@ def main() -> None:
     model.fit(train[feature_columns], train["rul"])
 
     last_rows = test.loc[test.groupby("unit_number")["cycle"].idxmax()]
-    predictions = model.predict(last_rows[feature_columns])
+    predictions, lower, upper, prediction_std = predict_with_uncertainty(
+        model, last_rows[feature_columns]
+    )
     truth = pd.read_csv(
         "data/raw/RUL_FD001.txt",
         sep=r"\s+",
@@ -45,6 +48,9 @@ def main() -> None:
             "unit_number": last_rows["unit_number"].to_numpy(),
             "actual_rul": truth.to_numpy(),
             "predicted_rul": predictions,
+            "prediction_p10": lower,
+            "prediction_p90": upper,
+            "prediction_std": prediction_std,
         }
     )
     result["absolute_error"] = (

@@ -48,6 +48,8 @@ def main() -> None:
         )
 
     predicted_rul = prediction["predicted_rul"]
+    lower_rul = prediction["prediction_p10"]
+    upper_rul = prediction["prediction_p90"]
     if predicted_rul <= threshold:
         risk = "高风险：建议人工检查"
     elif predicted_rul <= 2 * threshold:
@@ -68,6 +70,7 @@ def main() -> None:
 
 - 当前观测周期：{int(history['cycle'].max())}
 - 预测剩余寿命：{predicted_rul:.1f} cycles
+- 预测区间（80% 经验区间）：{lower_rul:.1f} 至 {upper_rul:.1f} cycles
 - 风险等级：{risk}
 - 风险阈值：{threshold} cycles
 - 趋势复核：{trend_warning}

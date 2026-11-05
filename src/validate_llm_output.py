@@ -5,6 +5,7 @@ from pathlib import Path
 REQUIRED_PHRASES = [
     "human review",
     "sensor trends",
+    "prediction interval",
     "research aid",
 ]
 FORBIDDEN_PHRASES = [

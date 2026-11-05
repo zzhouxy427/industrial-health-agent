@@ -62,6 +62,11 @@ def main() -> None:
         "unit_number": args.unit,
         "current_cycle": int(history["cycle"].max()),
         "predicted_rul": round(predicted_rul, 3),
+        "prediction_interval_80": {
+            "lower": round(float(prediction["prediction_p10"]), 3),
+            "upper": round(float(prediction["prediction_p90"]), 3),
+        },
+        "prediction_std": round(float(prediction["prediction_std"]), 3),
         "risk_threshold": threshold,
         "risk_level": risk_level,
         "trend_warning": all(change > 0 for change in changes),
