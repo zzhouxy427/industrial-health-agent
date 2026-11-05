@@ -1,5 +1,8 @@
+import argparse
 import json
 import os
+import subprocess
+import sys
 import urllib.request
 from pathlib import Path
 
@@ -7,6 +10,10 @@ from validate_llm_output import validate_text
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Generate a safety-checked LLM diagnostic")
+    parser.add_argument("--unit", type=int, default=18)
+    args = parser.parse_args()
+
     api_key = os.environ.get("LLM_API_KEY")
     base_url = os.environ.get("LLM_BASE_URL")
     model = os.environ.get("LLM_MODEL")
@@ -16,7 +23,17 @@ def main() -> None:
             "请先设置 LLM_API_KEY、LLM_BASE_URL 和 LLM_MODEL，且不要把密钥写入代码。"
         )
 
-    prompt = Path("artifacts/prompt_unit_18.md").read_text(encoding="utf-8")
+    subprocess.run(
+        [sys.executable, "src/export_agent_context.py", "--unit", str(args.unit)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    context = Path(f"artifacts/agent_context_unit_{args.unit}.json").read_text(
+        encoding="utf-8"
+    )
+    template = Path("docs/diagnostic_prompt.md").read_text(encoding="utf-8")
+    prompt = f"{template}\n\n## JSON Context\n```json\n{context}\n```\n"
     payload = {
         "model": model,
         "messages": [
@@ -46,7 +63,7 @@ def main() -> None:
         raise SystemExit(
             f"LLM 输出未通过安全校验。缺少: {missing}; 禁止内容: {forbidden}"
         )
-    output_path = Path("artifacts/llm_diagnostic_unit_18.md")
+    output_path = Path(f"artifacts/llm_diagnostic_unit_{args.unit}.md")
     output_path.write_text(answer, encoding="utf-8")
     print(f"大模型诊断已保存: {output_path}")
     print(answer)

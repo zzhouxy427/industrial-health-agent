@@ -94,6 +94,25 @@ def main() -> None:
     else:
         st.info("点击上方按钮生成该发动机的诊断报告。")
 
+    st.subheader("LLM 辅助诊断（可选）")
+    st.caption("调用已配置的模型服务；输出会先通过安全校验，再展示。")
+    llm_path = Path(f"artifacts/llm_diagnostic_unit_{unit}.md")
+    if st.button("生成 LLM 辅助诊断"):
+        with st.spinner("正在调用 LLM 并进行安全校验..."):
+            completed = subprocess.run(
+                [sys.executable, "src/llm_agent.py", "--unit", str(unit)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        if completed.returncode != 0:
+            st.error(completed.stderr or completed.stdout)
+        else:
+            st.success("LLM 辅助诊断已通过安全校验")
+
+    if llm_path.exists():
+        st.markdown(llm_path.read_text(encoding="utf-8"))
+
     st.divider()
     st.caption("仅用于研究与学习；不构成真实设备维护或安全指令。")
 
