@@ -1,9 +1,11 @@
 import pandas as pd
 
+from config import RISK_THRESHOLD
+
 
 def main() -> None:
     result = pd.read_csv("artifacts/fd001_predictions.csv")
-    threshold = 20
+    threshold = RISK_THRESHOLD
     actual_critical = result["actual_rul"] <= threshold
     predicted_critical = result["predicted_rul"] <= threshold
 

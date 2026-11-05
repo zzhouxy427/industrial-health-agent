@@ -3,6 +3,7 @@ import argparse
 
 import pandas as pd
 
+from config import RISK_THRESHOLD
 from retrieve_guidance import retrieve_guidance
 
 
@@ -21,7 +22,7 @@ def main() -> None:
     parser.add_argument("--unit", type=int, default=15, help="engine unit number")
     args = parser.parse_args()
     unit_number = args.unit
-    threshold = 20
+    threshold = RISK_THRESHOLD
 
     predictions = pd.read_csv("artifacts/fd001_predictions.csv")
     prediction = predictions.loc[predictions["unit_number"] == unit_number].iloc[0]

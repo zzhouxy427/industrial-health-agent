@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from config import RISK_THRESHOLD
 from retrieve_guidance import retrieve_guidance
 
 
@@ -49,7 +50,7 @@ def main() -> None:
         )
 
     predicted_rul = float(prediction["predicted_rul"])
-    threshold = 20
+    threshold = RISK_THRESHOLD
     if predicted_rul <= threshold:
         risk_level = "high"
     elif predicted_rul <= 2 * threshold:

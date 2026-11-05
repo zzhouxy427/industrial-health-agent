@@ -1,6 +1,6 @@
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
 
+from model_factory import build_rul_model
 from train_engineered import build_features
 
 
@@ -14,11 +14,7 @@ def main() -> None:
     train = frame[frame["unit_number"].isin(train_units)]
     validation = frame[frame["unit_number"].isin(validation_units)]
 
-    model = RandomForestRegressor(
-        n_estimators=150,
-        random_state=42,
-        n_jobs=-1,
-    )
+    model = build_rul_model()
     model.fit(train[feature_columns], train["rul"])
 
     # 模拟多个真实观测时刻，覆盖健康、退化和临界状态。

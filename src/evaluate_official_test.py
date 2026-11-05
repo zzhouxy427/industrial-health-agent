@@ -1,7 +1,7 @@
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
+from model_factory import build_rul_model
 from train_engineered import build_features
 
 
@@ -25,11 +25,7 @@ def main() -> None:
     train, feature_columns = build_features(train)
     test, _ = build_features(test)
 
-    model = RandomForestRegressor(
-        n_estimators=150,
-        random_state=42,
-        n_jobs=-1,
-    )
+    model = build_rul_model()
     model.fit(train[feature_columns], train["rul"])
 
     last_rows = test.loc[test.groupby("unit_number")["cycle"].idxmax()]
