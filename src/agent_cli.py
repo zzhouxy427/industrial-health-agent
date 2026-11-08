@@ -1,6 +1,10 @@
 import argparse
+import json
 import subprocess
 import sys
+from pathlib import Path
+
+from audit_log import append_diagnosis_event
 
 
 def main() -> None:
@@ -21,7 +25,15 @@ def main() -> None:
         check=True,
     )
 
-    print("\nAgent: 诊断任务完成，请查看 artifacts 目录中的 Markdown 报告。")
+    subprocess.run(
+        [sys.executable, "src/export_agent_context.py", "--unit", str(args.unit)],
+        check=True,
+    )
+    context_path = Path(f"artifacts/agent_context_unit_{args.unit}.json")
+    context = json.loads(context_path.read_text(encoding="utf-8"))
+    append_diagnosis_event(context)
+
+    print("\nAgent: 诊断任务完成，已生成报告和审计记录。")
 
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ import streamlit as st
 
 from config import RISK_THRESHOLD
 from data_quality import assess_unit_quality
+from audit_log import load_recent_events
 
 
 RAW_COLUMNS = [
@@ -124,6 +125,21 @@ def main() -> None:
 
     if llm_path.exists():
         st.markdown(llm_path.read_text(encoding="utf-8"))
+
+    st.subheader("近期诊断审计记录")
+    audit_events = load_recent_events()
+    if audit_events:
+        audit_frame = pd.DataFrame(audit_events)
+        interval = audit_frame.pop("prediction_interval_80")
+        audit_frame["interval_80"] = interval.map(
+            lambda value: f"{value['lower']:.1f}–{value['upper']:.1f}"
+        )
+        audit_frame["data_quality_passed"] = audit_frame.pop("data_quality").map(
+            lambda value: value["passed"]
+        )
+        st.dataframe(audit_frame, hide_index=True, use_container_width=True)
+    else:
+        st.info("暂无审计记录。点击“生成或刷新诊断报告”后将自动生成记录。")
 
     st.divider()
     st.caption("仅用于研究与学习；不构成真实设备维护或安全指令。")
