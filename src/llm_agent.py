@@ -6,10 +6,12 @@ import sys
 import urllib.request
 from pathlib import Path
 
+from settings import load_local_env
 from validate_llm_output import validate_text
 
 
 def main() -> None:
+    load_local_env()
     parser = argparse.ArgumentParser(description="Generate a safety-checked LLM diagnostic")
     parser.add_argument("--unit", type=int, default=18)
     args = parser.parse_args()

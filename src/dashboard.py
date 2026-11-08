@@ -10,6 +10,7 @@ import streamlit as st
 from config import RISK_THRESHOLD
 from data_quality import assess_unit_quality
 from audit_log import load_recent_events
+from risk_queue import build_risk_queue
 
 
 RAW_COLUMNS = [
@@ -44,6 +45,27 @@ def main() -> None:
     except FileNotFoundError:
         st.error("缺少数据或预测文件。请先运行 `python src\\save_predictions.py`。")
         return
+
+    st.subheader("优先人工复核队列")
+    risk_queue = build_risk_queue(predictions, RISK_THRESHOLD)
+    review_queue = risk_queue.loc[risk_queue["priority"] != "monitor"]
+    if review_queue.empty:
+        st.success("当前没有预测或预测区间触及风险阈值的发动机。")
+    else:
+        st.dataframe(
+            review_queue[
+                [
+                    "unit_number",
+                    "predicted_rul",
+                    "prediction_p10",
+                    "prediction_p90",
+                    "priority",
+                    "review_reason",
+                ]
+            ],
+            hide_index=True,
+            use_container_width=True,
+        )
 
     unit = st.sidebar.selectbox(
         "选择发动机", sorted(predictions["unit_number"].unique())
