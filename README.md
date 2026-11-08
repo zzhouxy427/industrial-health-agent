@@ -25,6 +25,7 @@
 | 官方 FD001 测试集 RMSE | 28.77 cycles |
 | 5 折发动机级交叉验证 MAE | 26.62 ± 1.64 cycles |
 | 5 折发动机级交叉验证 RMSE | 37.81 ± 2.71 cycles |
+| P10–P90 经验区间实际覆盖率 | 78.0%（名义约 80%） |
 | 风险阈值 | 20 cycles |
 
 这些数字反映该版本和 FD001 模拟数据上的实验结果，不应外推为真实航空设备性能或安全结论。
@@ -101,6 +102,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_full_pipeline.
 主要生成物位于被 Git 忽略的 `artifacts/`：
 
 - `fd001_predictions.csv`：官方测试集 RUL 预测和经验区间；
+- `prediction_interval_report.md`：经验区间的实际覆盖率和平均宽度；
 - `data_drift_report.md`：批次级 PSI 偏移报告；
 - `risk_queue.csv`：风险优先级队列；
 - `maintenance_review_summary.md`：批量人工复核清单；
