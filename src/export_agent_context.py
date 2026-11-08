@@ -6,6 +6,7 @@ import pandas as pd
 
 from config import RISK_THRESHOLD
 from data_quality import assess_unit_quality
+from model_monitoring import assess_current_batch_drift
 from retrieve_guidance import retrieve_guidance
 
 
@@ -52,6 +53,7 @@ def main() -> None:
 
     predicted_rul = float(prediction["predicted_rul"])
     quality = assess_unit_quality(args.unit)
+    monitoring = assess_current_batch_drift()
     threshold = RISK_THRESHOLD
     if predicted_rul <= threshold:
         risk_level = "high"
@@ -74,6 +76,7 @@ def main() -> None:
             "outside_ratio": round(float(quality["outside_ratio"]), 4),
             "range_warning": quality["range_warning"],
         },
+        "model_monitoring": monitoring,
         "risk_threshold": threshold,
         "risk_level": risk_level,
         "trend_warning": all(change > 0 for change in changes),

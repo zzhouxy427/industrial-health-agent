@@ -5,6 +5,7 @@ import pandas as pd
 
 from config import RISK_THRESHOLD
 from data_quality import assess_unit_quality
+from model_monitoring import assess_current_batch_drift
 from retrieve_guidance import retrieve_guidance
 
 
@@ -52,7 +53,13 @@ def main() -> None:
     lower_rul = prediction["prediction_p10"]
     upper_rul = prediction["prediction_p90"]
     quality = assess_unit_quality(unit_number)
+    monitoring = assess_current_batch_drift()
     quality_status = "通过" if quality["passed"] else "需要人工复核"
+    drift_status = (
+        "当前批次与训练集存在显著输入分布偏移：应人工复核模型适用范围"
+        if monitoring["warning"]
+        else "未检测到显著的批次级输入分布偏移"
+    )
     if predicted_rul <= threshold:
         risk = "高风险：建议人工检查"
     elif predicted_rul <= 2 * threshold:
@@ -77,6 +84,7 @@ def main() -> None:
 - 风险等级：{risk}
 - 风险阈值：{threshold} cycles
 - 数据质量：{quality_status}（范围提示比例 {quality['outside_ratio']:.2%}）
+- 模型适用性：{drift_status}（显著偏移特征 {monitoring['significant_feature_count']} 个）
 - 趋势复核：{trend_warning}
 
 ## 传感器趋势

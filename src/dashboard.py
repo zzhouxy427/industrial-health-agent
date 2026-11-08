@@ -10,6 +10,7 @@ import streamlit as st
 from config import RISK_THRESHOLD
 from data_quality import assess_unit_quality
 from audit_log import load_recent_events
+from model_monitoring import assess_current_batch_drift
 from risk_queue import build_risk_queue
 
 
@@ -42,11 +43,20 @@ def main() -> None:
     try:
         predictions = load_predictions()
         test_data = load_test_data()
+        monitoring = assess_current_batch_drift()
     except FileNotFoundError:
         st.error("缺少数据或预测文件。请先运行 `python src\\save_predictions.py`。")
         return
 
     st.subheader("优先人工复核队列")
+    if monitoring["warning"]:
+        st.warning(
+            "模型适用性提示：当前批次与训练集存在显著输入分布偏移（"
+            f"{monitoring['significant_feature_count']} 个特征）。"
+            "预测结果需要结合人工复核，不代表模型已失效。"
+        )
+    else:
+        st.success("模型适用性提示：未检测到显著的批次级输入分布偏移。")
     risk_queue = build_risk_queue(predictions, RISK_THRESHOLD)
     review_queue = risk_queue.loc[risk_queue["priority"] != "monitor"]
     if review_queue.empty:
@@ -159,6 +169,10 @@ def main() -> None:
         audit_frame["data_quality_passed"] = audit_frame.pop("data_quality").map(
             lambda value: value["passed"]
         )
+        if "model_monitoring" in audit_frame:
+            audit_frame["model_drift_warning"] = audit_frame.pop(
+                "model_monitoring"
+            ).map(lambda value: value.get("warning") if value else None)
         st.dataframe(audit_frame, hide_index=True, use_container_width=True)
     else:
         st.info("暂无审计记录。点击“生成或刷新诊断报告”后将自动生成记录。")

@@ -4,6 +4,7 @@ from pathlib import Path
 
 from data_drift import assess_feature_drift
 from data_quality import FEATURE_COLUMNS, load_raw
+from model_monitoring import summarize_drift
 
 
 def main() -> None:
@@ -15,15 +16,14 @@ def main() -> None:
     output_dir.mkdir(exist_ok=True)
     drift.to_csv(output_dir / "data_drift.csv", index=False)
 
-    significant = int((drift["status"] == "significant").sum())
-    moderate = int((drift["status"] == "moderate").sum())
+    summary = summarize_drift(drift)
     report = "\n".join(
         [
             "# 输入数据分布监控报告",
             "",
             "- 方法：按训练集分位数分箱计算 PSI（Population Stability Index）。",
-            f"- 显著偏移特征（PSI ≥ 0.25）：{significant} 个",
-            f"- 中等偏移特征（0.10 ≤ PSI < 0.25）：{moderate} 个",
+            f"- 显著偏移特征（PSI ≥ 0.25）：{summary['significant_feature_count']} 个",
+            f"- 中等偏移特征（0.10 ≤ PSI < 0.25）：{summary['moderate_feature_count']} 个",
             "",
             "## PSI 最高的 10 个特征",
             "",
