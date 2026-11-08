@@ -21,13 +21,15 @@
 
 | 指标 | 结果 |
 | --- | ---: |
-| 官方 FD001 测试集 MAE | 20.61 cycles |
-| 官方 FD001 测试集 RMSE | 28.75 cycles |
-| 5 折发动机级交叉验证 MAE | 26.87 ± 1.25 cycles |
-| 5 折发动机级交叉验证 RMSE | 38.13 ± 1.69 cycles |
+| 官方 FD001 测试集 MAE | 20.63 cycles |
+| 官方 FD001 测试集 RMSE | 28.77 cycles |
+| 5 折发动机级交叉验证 MAE | 26.62 ± 1.64 cycles |
+| 5 折发动机级交叉验证 RMSE | 37.81 ± 2.71 cycles |
 | 风险阈值 | 20 cycles |
 
 这些数字反映该版本和 FD001 模拟数据上的实验结果，不应外推为真实航空设备性能或安全结论。
+完整实验设置、结果来源及解释见 [docs/experiment_report.md](docs/experiment_report.md)，
+适用边界见 [docs/limitations.md](docs/limitations.md)。
 
 ## 架构概览
 
