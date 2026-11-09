@@ -17,6 +17,7 @@ def append_diagnosis_event(context: dict, path: Path = Path("artifacts/diagnosis
         "trend_warning": context["trend_warning"],
         "data_quality": context["data_quality"],
         "model_monitoring": context.get("model_monitoring"),
+        "model_metadata": context.get("model_metadata"),
     }
     path.parent.mkdir(exist_ok=True)
     with path.open("a", encoding="utf-8") as file:

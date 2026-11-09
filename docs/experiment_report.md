@@ -7,6 +7,7 @@
 ## 2. 模型与特征
 
 - 模型：`RandomForestRegressor`。
+- 模型版本：`rf-fd001-raw-v2`。每次诊断的结构化上下文和审计日志均记录此版本、特征集、超参数与评估摘要。
 - 选择参数：`n_estimators=200`、`max_depth=20`、`min_samples_leaf=4`、`max_features=1.0`、`random_state=42`。
 - 特征：周期、3 个运行设置、21 个传感器原始读数。原始特征由发动机级 5 折交叉验证从多个滚动窗口方案中选出，统一定义在 `feature_config.py`；窗口对比见 [temporal_feature_selection.md](temporal_feature_selection.md)。
 - 输出：RUL 点预测；并利用每棵树的输出计算 P10/P90 经验区间和标准差。

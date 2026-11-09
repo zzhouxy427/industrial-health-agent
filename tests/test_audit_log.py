@@ -13,6 +13,7 @@ def test_append_diagnosis_event_writes_json_line(tmp_path) -> None:
         "risk_level": "low",
         "trend_warning": True,
         "data_quality": {"passed": True},
+        "model_metadata": {"model_version": "rf-fd001-raw-v2"},
     }
 
     append_diagnosis_event(context, path)
@@ -20,6 +21,7 @@ def test_append_diagnosis_event_writes_json_line(tmp_path) -> None:
     event = json.loads(path.read_text(encoding="utf-8"))
     assert event["unit_number"] == 18
     assert event["data_quality"]["passed"] is True
+    assert event["model_metadata"]["model_version"] == "rf-fd001-raw-v2"
     assert "timestamp_utc" in event
 
     events = load_recent_events(path)

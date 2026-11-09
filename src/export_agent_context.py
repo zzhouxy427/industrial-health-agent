@@ -7,6 +7,7 @@ import pandas as pd
 from config import RISK_THRESHOLD
 from data_quality import assess_unit_quality
 from model_monitoring import assess_current_batch_drift
+from model_metadata import get_model_metadata
 from retrieve_guidance import retrieve_guidance
 
 
@@ -77,6 +78,7 @@ def main() -> None:
             "range_warning": quality["range_warning"],
         },
         "model_monitoring": monitoring,
+        "model_metadata": get_model_metadata(),
         "risk_threshold": threshold,
         "risk_level": risk_level,
         "trend_warning": all(change > 0 for change in changes),

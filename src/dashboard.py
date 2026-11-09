@@ -204,6 +204,10 @@ def main() -> None:
             audit_frame["model_drift_warning"] = audit_frame.pop(
                 "model_monitoring"
             ).map(lambda value: value.get("warning") if value else None)
+        if "model_metadata" in audit_frame:
+            audit_frame["model_version"] = audit_frame.pop("model_metadata").map(
+                lambda value: value.get("model_version") if value else "legacy"
+            )
         st.dataframe(audit_frame, hide_index=True, use_container_width=True)
     else:
         st.info("暂无审计记录。点击“生成或刷新诊断报告”后将自动生成记录。")
