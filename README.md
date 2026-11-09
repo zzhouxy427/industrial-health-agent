@@ -139,6 +139,7 @@ LLM 只能获得导出的结构化上下文；输出必须提到预测区间、�
 ## 演示与项目说明
 
 - [3 分钟演示脚本](docs/demo_walkthrough.md)
+- [发布前检查清单](docs/release_checklist.md)
 - [系统架构与决策边界](docs/architecture.md)
 - [实验结果与复现说明](docs/experiment_report.md)
 - [当前局限性](docs/limitations.md)
