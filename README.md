@@ -171,3 +171,50 @@ LLM 只能获得导出的结构化上下文；输出必须提到预测区间、�
 - PSI 表示输入分布变化，不等同于预测误差，也不能单独说明模型失效。
 - FD001 是仿真数据，真实场景还需考虑数据漂移、工况变化、传感器校准、领域验证和安全认证。
 - 当前 LLM 用于解释辅助，不参与自动控制或自动下达维护指令。
+## System Architecture
+
+```text
+C-MAPSS FD001 data
+        |
+        v
+Data quality checks
+        |
+        v
+RUL prediction model
+(Random Forest + engineered features)
+        |
+        v
+Prediction interval and risk threshold
+        |
+        v
+Risk queue and priority review
+        |
+        v
+Diagnostic Agent
+(prediction + sensor trends + maintenance knowledge)
+        |
+        v
+Streamlit dashboard and audit log
+```
+
+## Main Features
+
+- Remaining useful life prediction for industrial engines;
+- Prediction interval estimation for uncertainty awareness;
+- Data quality validation before diagnosis;
+- Sensor trend and distribution-shift analysis;
+- Risk queue with critical, review, and monitor priorities;
+- Knowledge-based maintenance guidance retrieval;
+- Optional LLM-assisted diagnosis with output safety validation;
+- Diagnostic audit trail for traceability;
+- Streamlit dashboard for interactive review.
+
+## Safety Design
+
+This project is a research and decision-support prototype, not an autonomous maintenance system.
+
+- It does not issue automatic shutdown or repair commands;
+- High-risk results require human review;
+- LLM output is validated before being displayed;
+- Prediction intervals and data-quality status are shown with each result;
+- FD001 is simulated data and does not provide a guarantee for real equipment safety.
