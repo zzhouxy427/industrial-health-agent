@@ -8,7 +8,7 @@ except ImportError:  # Supports direct execution from src scripts.
     from model_factory import RUL_MODEL_PARAMETERS
 
 
-MODEL_VERSION = "rf-fd001-raw-v2"
+MODEL_VERSION = "rf-fd001-raw-conformal-v3"
 EVALUATION_SUMMARY = {
     "official_test_mae": 19.53,
     "official_test_rmse": 26.10,
@@ -16,7 +16,9 @@ EVALUATION_SUMMARY = {
     "grouped_cv_mae_std": 1.64,
     "grouped_cv_rmse_mean": 37.57,
     "grouped_cv_rmse_std": 2.77,
-    "interval_80_coverage": 0.80,
+    "interval_80_coverage": 0.86,
+    "interval_calibration_method": "split_conformal_interval_expansion",
+    "interval_calibration_adjustment": 6.33,
 }
 
 

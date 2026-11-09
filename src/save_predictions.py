@@ -3,9 +3,10 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from conformal_calibration import estimate_interval_calibration, save_interval_calibration
 from feature_config import build_selected_features
 from model_factory import build_rul_model
-from prediction_uncertainty import predict_with_uncertainty
+from prediction_uncertainty import apply_conformal_adjustment, predict_with_uncertainty
 
 
 COLUMNS = [
@@ -32,9 +33,14 @@ def main() -> None:
     model = build_rul_model()
     model.fit(train[feature_columns], train["rul"])
 
+    calibration = estimate_interval_calibration(train)
+
     last_rows = test.loc[test.groupby("unit_number")["cycle"].idxmax()]
     predictions, lower, upper, prediction_std = predict_with_uncertainty(
         model, last_rows[feature_columns]
+    )
+    lower, upper = apply_conformal_adjustment(
+        lower, upper, calibration["adjustment"]
     )
     truth = pd.read_csv(
         "data/raw/RUL_FD001.txt",
@@ -60,6 +66,7 @@ def main() -> None:
     output_dir = Path("artifacts")
     output_dir.mkdir(exist_ok=True)
     result.to_csv(output_dir / "fd001_predictions.csv", index=False)
+    save_interval_calibration(calibration, output_dir / "interval_calibration.json")
 
     result.plot(
         x="unit_number",
@@ -75,6 +82,7 @@ def main() -> None:
     plt.savefig(output_dir / "fd001_predictions.png", dpi=150)
     print("已保存:", output_dir / "fd001_predictions.csv")
     print("已保存:", output_dir / "fd001_predictions.png")
+    print("区间校准偏移:", f"{calibration['adjustment']:.2f} cycles")
     print("最大绝对误差:", f"{result['absolute_error'].max():.2f} cycles")
 
 

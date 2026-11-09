@@ -44,3 +44,44 @@ def evaluate_interval_coverage(
         "below_lower_count": int(below_lower.sum()),
         "above_upper_count": int(above_upper.sum()),
     }
+
+
+def estimate_conformal_adjustment(
+    actual: np.ndarray, lower: np.ndarray, upper: np.ndarray, coverage: float = 0.80
+) -> float:
+    """Estimate a split-conformal expansion for an existing prediction interval.
+
+    The calibration values must be independent of the model-fitting data. The
+    returned non-negative offset expands both interval bounds and is selected
+    with the finite-sample conformal quantile rule.
+    """
+    if not 0 < coverage < 1:
+        raise ValueError("coverage must be between 0 and 1")
+    actual_values = np.asarray(actual, dtype=float)
+    lower_values = np.asarray(lower, dtype=float)
+    upper_values = np.asarray(upper, dtype=float)
+    if not (len(actual_values) == len(lower_values) == len(upper_values)):
+        raise ValueError("actual, lower, and upper must have equal length")
+    if len(actual_values) == 0:
+        raise ValueError("calibration data must not be empty")
+    if np.any(lower_values > upper_values):
+        raise ValueError("lower interval bounds must not exceed upper bounds")
+
+    scores = np.maximum.reduce(
+        [lower_values - actual_values, actual_values - upper_values, np.zeros(len(actual_values))]
+    )
+    quantile = min(np.ceil((len(scores) + 1) * coverage) / len(scores), 1.0)
+    return float(np.quantile(scores, quantile, method="higher"))
+
+
+def apply_conformal_adjustment(
+    lower: np.ndarray, upper: np.ndarray, adjustment: float
+) -> tuple[np.ndarray, np.ndarray]:
+    """Expand bounds by a calibrated offset and enforce non-negative RUL."""
+    if adjustment < 0:
+        raise ValueError("adjustment must not be negative")
+    lower_values = np.asarray(lower, dtype=float)
+    upper_values = np.asarray(upper, dtype=float)
+    if np.any(lower_values > upper_values):
+        raise ValueError("lower interval bounds must not exceed upper bounds")
+    return np.maximum(lower_values - adjustment, 0.0), upper_values + adjustment

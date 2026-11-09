@@ -9,7 +9,7 @@
 ## 系统能力
 
 - 使用调优后的随机森林回归器预测 RUL，并在官方 FD001 测试集上评估。
-- 基于随机森林树集合输出 10%–90% 经验预测区间，而非只给出单点预测。
+- 基于随机森林树集合输出 10%–90% 区间，并用训练集独立发动机的 split conformal 校准提升区间可靠性。
 - 通过数据质量检查识别缺失、周期重复/间断和超出训练分布范围的输入。
 - 以 PSI 监控当前批次输入分布相对训练集的偏移，并将结果纳入诊断结论。
 - 将设备划分为 `critical`、`review`、`monitor`，生成批量人工复核清单。
@@ -27,7 +27,7 @@
 | 官方 FD001 测试集 RMSE | 26.10 cycles |
 | 5 折发动机级交叉验证 MAE | 26.37 ± 1.64 cycles |
 | 5 折发动机级交叉验证 RMSE | 37.57 ± 2.77 cycles |
-| P10–P90 经验区间实际覆盖率 | 80.0%（名义约 80%） |
+| 校准后 P10–P90 区间实际覆盖率 | 86.0%（名义约 80%） |
 | 风险阈值 | 20 cycles |
 
 这些数字反映该版本和 FD001 模拟数据上的实验结果，不应外推为真实航空设备性能或安全结论。
@@ -40,7 +40,7 @@
 flowchart LR
     A[C-MAPSS FD001 原始数据] --> B[特征构造与 RUL 标注]
     B --> C[随机森林 RUL 预测]
-    C --> D[点预测 + 80% 经验区间]
+    C --> D[点预测 + 经 split conformal 校准的区间]
     A --> E[数据质量检查]
     A --> F[PSI 输入分布漂移监控]
     D --> G[风险队列]
@@ -58,7 +58,8 @@ flowchart LR
 ```text
 src/
   save_predictions.py           # 训练模型并导出官方测试集预测
-  prediction_uncertainty.py     # 树集合经验预测区间
+  prediction_uncertainty.py     # 树集合预测区间与共形校准工具
+  conformal_calibration.py      # 基于独立训练发动机的区间校准
   data_quality.py               # 单台设备数据质量检查
   data_drift.py                 # PSI 特征分布偏移计算
   risk_queue.py                 # critical/review/monitor 优先级

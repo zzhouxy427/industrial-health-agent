@@ -2,6 +2,8 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 
 from src.prediction_uncertainty import (
+    apply_conformal_adjustment,
+    estimate_conformal_adjustment,
     evaluate_interval_coverage,
     predict_with_uncertainty,
 )
@@ -31,3 +33,14 @@ def test_interval_coverage_reports_expected_counts() -> None:
     assert metrics["below_lower_count"] == 1
     assert metrics["above_upper_count"] == 1
     assert metrics["mean_width"] == 7 / 3
+
+
+def test_conformal_adjustment_expands_interval_for_calibration_errors() -> None:
+    adjustment = estimate_conformal_adjustment(
+        actual=[0, 5, 12], lower=[1, 4, 8], upper=[3, 6, 10], coverage=0.8
+    )
+    lower, upper = apply_conformal_adjustment([1, 4], [3, 6], adjustment)
+
+    assert adjustment == 2.0
+    assert lower.tolist() == [0.0, 2.0]
+    assert upper.tolist() == [5.0, 8.0]

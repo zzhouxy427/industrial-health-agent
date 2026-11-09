@@ -1,6 +1,7 @@
 """Evaluate empirical coverage of the exported RUL prediction intervals."""
 
 from pathlib import Path
+import json
 
 import pandas as pd
 
@@ -14,10 +15,13 @@ def main() -> None:
         predictions["prediction_p10"].to_numpy(),
         predictions["prediction_p90"].to_numpy(),
     )
+    calibration_path = Path("artifacts/interval_calibration.json")
+    calibration = json.loads(calibration_path.read_text(encoding="utf-8"))
     report = f"""# 预测区间经验覆盖率评估
 
 - 样本数：{metrics['sample_count']}
-- 区间：随机森林树预测的 P10–P90（名义覆盖率约 80%）
+- 区间：随机森林树预测的 P10–P90，经训练集独立发动机的 split conformal 偏移扩张（名义覆盖率约 80%）
+- 校准偏移：{calibration['adjustment']:.2f} cycles（{calibration['calibration_engine_count']} 台校准发动机、{calibration['calibration_observation_count']} 个模拟观测点）
 - 实际覆盖率：{metrics['coverage']:.1%}
 - 平均区间宽度：{metrics['mean_width']:.2f} cycles
 - 真实 RUL 低于区间下界：{metrics['below_lower_count']} 台
@@ -25,8 +29,7 @@ def main() -> None:
 
 ## 解读
 
-该结果衡量经验区间在 FD001 官方测试集上的实际覆盖程度。若实际覆盖率显著低于 80%，
-说明区间偏窄或未校准；若远高于 80%，说明区间可能过宽。无论结果如何，当前区间均不应被解释为经过严格统计校准的置信区间。
+该结果衡量经 split conformal 扩张后的区间在 FD001 官方测试集上的实际覆盖程度。校准数据仅来自训练集的独立发动机，未使用官方测试标签。若实际覆盖率显著低于 80%，说明校准仍可能不足；若远高于 80%，说明区间可能过宽。该结果仍局限于 FD001 模拟基准，不能直接外推到真实设备。
 """
     output_path = Path("artifacts/prediction_interval_report.md")
     output_path.write_text(report, encoding="utf-8")
