@@ -50,6 +50,7 @@ try {
     Invoke-ProjectPython @("src\evaluate_risk_queue.py")
     Invoke-ProjectPython @("src\risk_queue_gate.py")
     Invoke-ProjectPython @("src\generate_review_summary.py")
+    Invoke-ProjectPython @("src\release_audit.py")
 
     if (-not $SkipTests) {
         Invoke-ProjectPython @("-m", "pytest", "-q")

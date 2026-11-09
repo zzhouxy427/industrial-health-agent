@@ -17,9 +17,10 @@
 python -m pytest -q
 python -m compileall -q src tests
 git diff --check
+python src\release_audit.py
 ```
 
-预期：测试全部通过、无 Python 编译错误、无空白格式错误。
+预期：测试全部通过、无 Python 编译错误、无空白格式错误，且本地发布审计通过。
 
 如需完整复现实验产物，执行：
 

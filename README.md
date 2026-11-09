@@ -71,6 +71,7 @@ src/
   evaluate_risk_queue.py        # 离线量化风险队列的精确率与召回率
   risk_queue_gate.py            # 检查人工复核队列的离线召回率门禁
   model_artifact.py             # 保存带 SHA-256 指纹的本地模型快照与清单
+  release_audit.py              # 汇总性能、队列与快照完整性的本地发布审计
   data_quality.py               # 单台设备数据质量检查
   data_drift.py                 # PSI 特征分布偏移计算
   risk_queue.py                 # critical/review/monitor 优先级
