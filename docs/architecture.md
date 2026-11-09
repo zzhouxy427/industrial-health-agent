@@ -39,7 +39,7 @@ flowchart TB
     end
 
     subgraph UI[展示与人工复核]
-        Dashboard[Streamlit 仪表盘]
+        Dashboard[Streamlit 仪表盘：风险、漂移、发布状态]
         Human[人工复核与维护决策]
     end
 
@@ -79,7 +79,7 @@ flowchart TB
 5. `performance_gate.py` 检查官方评估结果是否超过允许的 MAE/RMSE 上限，防止明显回归进入发布结果。
 6. `agent_cli.py --unit N` 调用确定性报告、导出结构化上下文，并写入审计日志。
 7. 可选的 `llm_agent.py --unit N` 读取上下文并调用外部模型；只有通过安全规则的文本才会保存和展示。
-8. `dashboard.py` 用于查看复核队列、单台证据、报告、LLM 辅助结果和审计历史。
+8. `dashboard.py` 用于查看复核队列、单台证据、模型版本与性能门禁、报告、LLM 辅助结果和审计历史。
 
 ## 复现入口
 

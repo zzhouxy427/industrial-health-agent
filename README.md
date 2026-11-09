@@ -17,7 +17,7 @@
 - 将设备划分为 `critical`、`review`、`monitor`，生成批量人工复核清单。
 - 根据关键传感器趋势和本地维护知识库生成确定性诊断报告。
 - 可选调用兼容 OpenAI API 的 LLM；LLM 输出必须通过缺失项与危险指令安全校验。
-- 记录诊断审计日志，并以 Streamlit 提供本地可视化界面。
+- 记录诊断审计日志，并以 Streamlit 提供本地可视化界面；首页同时展示模型版本与 MAE/RMSE 发布门禁状态。
 
 完整架构见 [docs/architecture.md](docs/architecture.md)。
 
