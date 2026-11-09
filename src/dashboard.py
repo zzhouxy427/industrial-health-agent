@@ -11,6 +11,7 @@ from config import RISK_THRESHOLD
 from data_quality import assess_unit_quality
 from audit_log import load_recent_events
 from model_monitoring import assess_current_batch_drift
+from model_artifact import verify_model_bundle
 from release_status import load_release_status
 from risk_queue import build_risk_queue
 from risk_queue_status import load_risk_queue_status
@@ -49,6 +50,7 @@ def main() -> None:
         test_data = load_test_data()
         monitoring = assess_current_batch_drift()
         release_status = load_release_status()
+        artifact_status = verify_model_bundle()
         queue_status = load_risk_queue_status()
     except FileNotFoundError:
         st.error("缺少数据或预测文件。请先运行 `python src\\save_predictions.py`。")
@@ -79,7 +81,7 @@ def main() -> None:
         st.success("模型适用性提示：未检测到显著的批次级输入分布偏移。")
 
     st.subheader("模型发布状态")
-    version_column, mae_column, rmse_column = st.columns(3)
+    version_column, mae_column, rmse_column, artifact_column = st.columns(4)
     version_column.metric("模型版本", release_status["model_version"])
     if release_status["evaluated"]:
         metrics = release_status["metrics"]
@@ -94,11 +96,21 @@ def main() -> None:
     else:
         mae_column.metric("官方测试 MAE", "未评估")
         rmse_column.metric("官方测试 RMSE", "未评估")
+    artifact_column.metric(
+        "模型快照完整性",
+        "通过" if artifact_status["verified"] else "未验证",
+        artifact_status["model_version"] or "未生成",
+    )
 
     if release_status["passed"]:
         st.success("性能发布门禁已通过：当前指标未超过版本化的 MAE/RMSE 上限。")
     else:
         st.warning("性能发布门禁未通过或尚未评估：" + "；".join(release_status["failures"]))
+
+    if artifact_status["verified"]:
+        st.success(artifact_status["message"])
+    else:
+        st.warning(artifact_status["message"])
 
     st.subheader("风险队列离线证据")
     if queue_status["evaluated"]:

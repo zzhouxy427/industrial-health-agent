@@ -48,3 +48,50 @@ def save_model_bundle(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     return manifest
+
+
+def verify_model_bundle(
+    manifest_path: Path = Path("artifacts/rul_model_manifest.json"),
+) -> dict:
+    """Verify a locally-produced model bundle without deserializing its binary."""
+    status = {
+        "available": False,
+        "verified": False,
+        "model_version": None,
+        "message": "尚未生成本地模型快照。",
+    }
+    if not manifest_path.exists():
+        return status
+
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        model_file = manifest["model_file"]
+        expected_hash = manifest["model_sha256"]
+    except (json.JSONDecodeError, KeyError, TypeError):
+        status["message"] = "模型快照清单格式不完整。"
+        return status
+
+    candidate = Path(model_file)
+    if candidate.name != model_file or candidate.is_absolute():
+        status["message"] = "模型快照清单包含不安全的文件路径。"
+        return status
+
+    model_path = manifest_path.parent / candidate
+    if not model_path.exists():
+        status["available"] = True
+        status["message"] = "模型快照二进制文件缺失。"
+        return status
+
+    status["available"] = True
+    status["model_version"] = manifest.get("model_version")
+    if sha256_file(model_path) != expected_hash:
+        status["message"] = "模型快照完整性校验失败：SHA-256 不匹配。"
+        return status
+
+    status.update(
+        {
+            "verified": True,
+            "message": "模型快照 SHA-256 完整性校验通过。",
+        }
+    )
+    return status
