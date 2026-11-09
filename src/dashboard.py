@@ -13,6 +13,7 @@ from audit_log import load_recent_events
 from model_monitoring import assess_current_batch_drift
 from release_status import load_release_status
 from risk_queue import build_risk_queue
+from risk_queue_status import load_risk_queue_status
 
 
 RAW_COLUMNS = [
@@ -48,6 +49,7 @@ def main() -> None:
         test_data = load_test_data()
         monitoring = assess_current_batch_drift()
         release_status = load_release_status()
+        queue_status = load_risk_queue_status()
     except FileNotFoundError:
         st.error("缺少数据或预测文件。请先运行 `python src\\save_predictions.py`。")
         return
@@ -97,6 +99,27 @@ def main() -> None:
         st.success("性能发布门禁已通过：当前指标未超过版本化的 MAE/RMSE 上限。")
     else:
         st.warning("性能发布门禁未通过或尚未评估：" + "；".join(release_status["failures"]))
+
+    st.subheader("风险队列离线证据")
+    if queue_status["evaluated"]:
+        point_column, review_evidence_column, note_column = st.columns(3)
+        point_column.metric(
+            "仅 critical 召回率",
+            f"{queue_status['point_critical']['recall']:.1%}",
+        )
+        review_evidence_column.metric(
+            "人工复核队列召回率",
+            f"{queue_status['actionable_queue']['recall']:.1%}",
+        )
+        note_column.metric(
+            "人工复核队列精确率",
+            f"{queue_status['actionable_queue']['precision']:.1%}",
+        )
+        st.caption(
+            f"阈值：{queue_status['threshold']} cycles。{queue_status['message']}"
+        )
+    else:
+        st.info(queue_status["message"])
 
     review_queue = risk_queue.loc[risk_queue["priority"] != "monitor"]
     with st.expander(
