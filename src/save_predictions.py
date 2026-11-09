@@ -3,9 +3,9 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from feature_config import build_selected_features
 from model_factory import build_rul_model
 from prediction_uncertainty import predict_with_uncertainty
-from train_engineered import build_features
 
 
 COLUMNS = [
@@ -26,8 +26,8 @@ def main() -> None:
         header=None,
         names=COLUMNS,
     )
-    train, feature_columns = build_features(train)
-    test, _ = build_features(test)
+    train, feature_columns = build_selected_features(train)
+    test, _ = build_selected_features(test)
 
     model = build_rul_model()
     model.fit(train[feature_columns], train["rul"])

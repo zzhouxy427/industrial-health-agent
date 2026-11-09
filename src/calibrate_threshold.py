@@ -1,12 +1,12 @@
 import pandas as pd
 
+from feature_config import build_selected_features
 from model_factory import build_rul_model
-from train_engineered import build_features
 
 
 def main() -> None:
     frame = pd.read_csv("data/processed/train_fd001_with_rul.csv")
-    frame, feature_columns = build_features(frame)
+    frame, feature_columns = build_selected_features(frame)
 
     unit_numbers = sorted(frame["unit_number"].unique())
     train_units = set(unit_numbers[:80])

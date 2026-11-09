@@ -1,20 +1,20 @@
 """Evaluate the selected RUL model with engine-level cross-validation."""
 
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.model_selection import GroupKFold
+
+try:
+    from .feature_config import build_selected_features
+    from .model_factory import build_rul_model
+except ImportError:  # Supports `python src/cross_validate_model.py`.
+    from feature_config import build_selected_features
+    from model_factory import build_rul_model
 
 
 def main() -> None:
     frame = pd.read_csv("data/processed/train_fd001_with_rul.csv")
-    feature_columns = [
-        "cycle",
-        "op_setting_1",
-        "op_setting_2",
-        "op_setting_3",
-        *[f"sensor_{index}" for index in range(1, 22)],
-    ]
+    frame, feature_columns = build_selected_features(frame)
 
     features = frame[feature_columns]
     target = frame["rul"]
@@ -25,9 +25,7 @@ def main() -> None:
     for fold, (train_index, validation_index) in enumerate(
         splitter.split(features, target, groups), start=1
     ):
-        model = RandomForestRegressor(
-            n_estimators=100, random_state=42, n_jobs=-1
-        )
+        model = build_rul_model()
         model.fit(features.iloc[train_index], target.iloc[train_index])
         predictions = model.predict(features.iloc[validation_index])
         mae = mean_absolute_error(target.iloc[validation_index], predictions)

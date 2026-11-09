@@ -1,8 +1,8 @@
 import pandas as pd
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
+from feature_config import build_selected_features
 from model_factory import build_rul_model
-from train_engineered import build_features
 
 
 COLUMNS = [
@@ -22,8 +22,8 @@ def load_raw(path: str) -> pd.DataFrame:
 def main() -> None:
     train = pd.read_csv("data/processed/train_fd001_with_rul.csv")
     test = load_raw("data/raw/test_FD001.txt")
-    train, feature_columns = build_features(train)
-    test, _ = build_features(test)
+    train, feature_columns = build_selected_features(train)
+    test, _ = build_selected_features(test)
 
     model = build_rul_model()
     model.fit(train[feature_columns], train["rul"])

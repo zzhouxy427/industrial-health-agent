@@ -23,11 +23,11 @@
 
 | 指标 | 结果 |
 | --- | ---: |
-| 官方 FD001 测试集 MAE | 20.63 cycles |
-| 官方 FD001 测试集 RMSE | 28.77 cycles |
-| 5 折发动机级交叉验证 MAE | 26.62 ± 1.64 cycles |
-| 5 折发动机级交叉验证 RMSE | 37.81 ± 2.71 cycles |
-| P10–P90 经验区间实际覆盖率 | 78.0%（名义约 80%） |
+| 官方 FD001 测试集 MAE | 19.53 cycles |
+| 官方 FD001 测试集 RMSE | 26.10 cycles |
+| 5 折发动机级交叉验证 MAE | 26.37 ± 1.64 cycles |
+| 5 折发动机级交叉验证 RMSE | 37.57 ± 2.77 cycles |
+| P10–P90 经验区间实际覆盖率 | 80.0%（名义约 80%） |
 | 风险阈值 | 20 cycles |
 
 这些数字反映该版本和 FD001 模拟数据上的实验结果，不应外推为真实航空设备性能或安全结论。
@@ -144,6 +144,7 @@ LLM 只能获得导出的结构化上下文；输出必须提到预测区间、�
 - [发布前检查清单](docs/release_checklist.md)
 - [系统架构与决策边界](docs/architecture.md)
 - [实验结果与复现说明](docs/experiment_report.md)
+- [时间窗口特征选择实验](docs/temporal_feature_selection.md)
 - [当前局限性](docs/limitations.md)
 
 ## 参与贡献
