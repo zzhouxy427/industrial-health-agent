@@ -9,7 +9,7 @@ import streamlit as st
 
 from config import RISK_THRESHOLD
 from data_quality import assess_unit_quality
-from audit_log import load_recent_events
+from audit_log import format_events_for_display, load_recent_events
 from model_monitoring import assess_current_batch_drift
 from model_artifact import verify_model_bundle
 from release_audit import build_release_audit
@@ -271,22 +271,7 @@ def main() -> None:
     st.subheader("近期诊断审计记录")
     audit_events = load_recent_events()
     if audit_events:
-        audit_frame = pd.DataFrame(audit_events)
-        interval = audit_frame.pop("prediction_interval_80")
-        audit_frame["interval_80"] = interval.map(
-            lambda value: f"{value['lower']:.1f}–{value['upper']:.1f}"
-        )
-        audit_frame["data_quality_passed"] = audit_frame.pop("data_quality").map(
-            lambda value: value["passed"]
-        )
-        if "model_monitoring" in audit_frame:
-            audit_frame["model_drift_warning"] = audit_frame.pop(
-                "model_monitoring"
-            ).map(lambda value: value.get("warning") if value else None)
-        if "model_metadata" in audit_frame:
-            audit_frame["model_version"] = audit_frame.pop("model_metadata").map(
-                lambda value: value.get("model_version") if value else "legacy"
-            )
+        audit_frame = pd.DataFrame(format_events_for_display(audit_events))
         st.dataframe(audit_frame, hide_index=True, use_container_width=True)
     else:
         st.info("暂无审计记录。点击“生成或刷新诊断报告”后将自动生成记录。")
