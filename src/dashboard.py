@@ -36,8 +36,10 @@ def load_test_data() -> pd.DataFrame:
 
 
 def main() -> None:
-    st.set_page_config(page_title="Industrial Health Agent", page_icon="⚙️")
-    st.title("⚙️ Industrial Health Agent")
+    st.set_page_config(
+        page_title="工业健康代理人", page_icon="⚙️", layout="wide"
+    )
+    st.title("⚙️ 工业健康代理人")
     st.caption("基于 C-MAPSS FD001 的剩余寿命预测与维护诊断原型")
 
     try:
@@ -48,7 +50,21 @@ def main() -> None:
         st.error("缺少数据或预测文件。请先运行 `python src\\save_predictions.py`。")
         return
 
-    st.subheader("优先人工复核队列")
+    risk_queue = build_risk_queue(predictions, RISK_THRESHOLD)
+    priority_counts = risk_queue["priority"].value_counts()
+    critical_count = int(priority_counts.get("critical", 0))
+    review_count = int(priority_counts.get("review", 0))
+    monitor_count = int(priority_counts.get("monitor", 0))
+
+    st.subheader("运行状态总览")
+    total_column, critical_column, review_column, drift_column = st.columns(4)
+    total_column.metric("纳入监测设备", len(predictions))
+    critical_column.metric("优先人工复核", critical_count)
+    review_column.metric("区间复核", review_count)
+    drift_column.metric(
+        "显著输入偏移特征", monitoring["significant_feature_count"]
+    )
+
     if monitoring["warning"]:
         st.warning(
             "模型适用性提示：当前批次与训练集存在显著输入分布偏移（"
@@ -57,41 +73,56 @@ def main() -> None:
         )
     else:
         st.success("模型适用性提示：未检测到显著的批次级输入分布偏移。")
-    risk_queue = build_risk_queue(predictions, RISK_THRESHOLD)
-    review_queue = risk_queue.loc[risk_queue["priority"] != "monitor"]
-    if review_queue.empty:
-        st.success("当前没有预测或预测区间触及风险阈值的发动机。")
-    else:
-        st.dataframe(
-            review_queue[
-                [
-                    "unit_number",
-                    "predicted_rul",
-                    "prediction_p10",
-                    "prediction_p90",
-                    "priority",
-                    "review_reason",
-                ]
-            ],
-            hide_index=True,
-            use_container_width=True,
-        )
 
+    review_queue = risk_queue.loc[risk_queue["priority"] != "monitor"]
+    with st.expander(
+        f"查看批量人工复核队列（{critical_count + review_count} 台）"
+    ):
+        if review_queue.empty:
+            st.success("当前没有预测或预测区间触及风险阈值的发动机。")
+        else:
+            st.dataframe(
+                review_queue[
+                    [
+                        "unit_number",
+                        "predicted_rul",
+                        "prediction_p10",
+                        "prediction_p90",
+                        "priority",
+                        "review_reason",
+                    ]
+                ],
+                hide_index=True,
+                use_container_width=True,
+            )
+
+    st.sidebar.header("诊断对象")
+    st.sidebar.caption(
+        f"critical {critical_count} 台 · review {review_count} 台 · monitor {monitor_count} 台"
+    )
     unit = st.sidebar.selectbox(
-        "选择发动机", sorted(predictions["unit_number"].unique())
+        "选择发动机", risk_queue["unit_number"].tolist()
     )
     row = predictions.loc[predictions["unit_number"] == unit].iloc[0]
+    queue_row = risk_queue.loc[risk_queue["unit_number"] == unit].iloc[0]
     predicted_rul = float(row["predicted_rul"])
-    risk_level = "高风险" if predicted_rul <= RISK_THRESHOLD else "低风险"
-    recommended_action = (
-        "建议人工复核" if risk_level == "高风险" else "建议继续监控"
-    )
+    priority = queue_row["priority"]
+    risk_level = {
+        "critical": "高风险：人工复核",
+        "review": "区间风险：人工复核",
+        "monitor": "低风险：继续监控",
+    }[priority]
 
-    metric_1, metric_2, metric_3 = st.columns(3)
+    st.subheader(f"发动机 {unit} 诊断概览")
+    metric_1, metric_2, metric_3, metric_4 = st.columns(4)
     metric_1.metric("预测剩余寿命", f"{predicted_rul:.1f} cycles")
     metric_2.metric("风险阈值", f"{RISK_THRESHOLD} cycles")
     metric_3.metric("风险等级", risk_level)
-    st.info(f"当前建议：{recommended_action}。传感器趋势仍需结合诊断报告人工判断。")
+    metric_4.metric("队列优先级", priority)
+    st.info(
+        "当前建议："
+        f"{queue_row['review_reason']}。传感器趋势和数据质量仍需结合诊断报告人工判断。"
+    )
     st.caption(
         "80% 预测区间："
         f"{float(row['prediction_p10']):.1f} 至 {float(row['prediction_p90']):.1f} cycles"
