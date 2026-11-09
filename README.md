@@ -28,6 +28,7 @@
 | 5 折发动机级交叉验证 MAE | 26.37 ± 1.64 cycles |
 | 5 折发动机级交叉验证 RMSE | 37.57 ± 2.77 cycles |
 | 校准后 P10–P90 区间实际覆盖率 | 86.0%（名义约 80%） |
+| 留出发动机告警提前量回测 | 19/20 台在临界区前触发复核；中位提前 21.5 cycles |
 | 风险阈值 | 20 cycles |
 
 这些数字反映该版本和 FD001 模拟数据上的实验结果，不应外推为真实航空设备性能或安全结论。
@@ -60,6 +61,7 @@ src/
   save_predictions.py           # 训练模型并导出官方测试集预测
   prediction_uncertainty.py     # 树集合预测区间与共形校准工具
   conformal_calibration.py      # 基于独立训练发动机的区间校准
+  evaluate_alert_timing.py      # 留出发动机上的人工复核告警提前量回测
   data_quality.py               # 单台设备数据质量检查
   data_drift.py                 # PSI 特征分布偏移计算
   risk_queue.py                 # critical/review/monitor 优先级

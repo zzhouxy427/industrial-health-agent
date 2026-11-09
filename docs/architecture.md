@@ -72,9 +72,10 @@ flowchart TB
 
 1. `save_predictions.py` 用训练集训练随机森林，并以独立训练发动机估计 split conformal 偏移；随后对每台测试发动机最后一个周期导出 RUL 与校准后的 P10/P90。
 2. `risk_queue.py` 将点预测低于阈值的设备标为 `critical`，区间下界触及阈值的设备标为 `review`。
-3. `agent_cli.py --unit N` 调用确定性报告、导出结构化上下文，并写入审计日志。
-4. 可选的 `llm_agent.py --unit N` 读取上下文并调用外部模型；只有通过安全规则的文本才会保存和展示。
-5. `dashboard.py` 用于查看复核队列、单台证据、报告、LLM 辅助结果和审计历史。
+3. `evaluate_alert_timing.py` 在独立留出发动机轨迹上回测首次人工复核的提前量，不使用未来周期或官方测试标签。
+4. `agent_cli.py --unit N` 调用确定性报告、导出结构化上下文，并写入审计日志。
+5. 可选的 `llm_agent.py --unit N` 读取上下文并调用外部模型；只有通过安全规则的文本才会保存和展示。
+6. `dashboard.py` 用于查看复核队列、单台证据、报告、LLM 辅助结果和审计历史。
 
 ## 复现入口
 
