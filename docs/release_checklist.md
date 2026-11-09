@@ -30,6 +30,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_full_pipeline.
 ## 3. 结果与决策边界
 
 - [ ] 官方测试集、交叉验证和预测区间覆盖率均已在 README 与实验报告中如实记录。
+- [ ] 已检查 `python src\performance_gate.py` 通过，且模型卡中的版本、指标和门限与当前结果一致。
 - [ ] 风险队列区分 `critical`、`review`、`monitor`，且说明其用途是排序人工复核，不是自动维护决策。
 - [ ] 数据质量、输入漂移和传感器趋势提示仍会写入诊断报告。
 - [ ] README、仪表盘与报告中保留“仅用于研究与学习”的安全边界。
@@ -75,6 +76,7 @@ git push
 - [ ] 工作区干净，分支为 `main` 并已跟踪 `origin/main`。
 - [ ] GitHub Actions 的 CI 为绿色。
 - [ ] README 首页可见项目简介、关键结果、架构图、复现命令、演示脚本和局限性。
+- [ ] `docs/model_card.md` 已说明模型用途、禁用用途、数据边界、指标、不确定性与变更控制。
 - [ ] GitHub 页面不展示本地 `artifacts/`、原始数据或 `.env`。
 
 ## 7. 展示材料
