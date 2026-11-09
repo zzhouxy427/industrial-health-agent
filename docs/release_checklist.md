@@ -32,6 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_full_pipeline.
 - [ ] 官方测试集、交叉验证和预测区间覆盖率均已在 README 与实验报告中如实记录。
 - [ ] 已检查 `python src\performance_gate.py` 通过，且模型卡中的版本、指标和门限与当前结果一致。
 - [ ] 风险队列区分 `critical`、`review`、`monitor`，且说明其用途是排序人工复核，不是自动维护决策。
+- [ ] 已运行 `python src\evaluate_risk_queue.py`，并确认离线队列召回/误报权衡记录在实验报告中。
 - [ ] 数据质量、输入漂移和传感器趋势提示仍会写入诊断报告。
 - [ ] README、仪表盘与报告中保留“仅用于研究与学习”的安全边界。
 

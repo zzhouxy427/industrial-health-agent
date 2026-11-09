@@ -47,6 +47,7 @@ try {
     Invoke-ProjectPython @("src\monitor_data_drift.py")
     Invoke-ProjectPython @("src\drift_stress_test.py")
     Invoke-ProjectPython @("src\build_risk_queue.py")
+    Invoke-ProjectPython @("src\evaluate_risk_queue.py")
     Invoke-ProjectPython @("src\generate_review_summary.py")
 
     if (-not $SkipTests) {

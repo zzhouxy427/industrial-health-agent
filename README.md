@@ -31,6 +31,7 @@
 | 5 折发动机级交叉验证 RMSE | 37.57 ± 2.77 cycles |
 | 校准后 P10–P90 区间实际覆盖率 | 86.0%（名义约 80%） |
 | 留出发动机告警提前量回测 | 19/20 台在临界区前触发复核；中位提前 21.5 cycles |
+| 人工复核队列离线召回率 | 93.8%（点预测 `critical` 为 62.5%） |
 | 漂移压力测试 | 3 个受控偏置场景均触发 PSI 人工复核提示 |
 | 风险阈值 | 20 cycles |
 
@@ -67,6 +68,7 @@ src/
   evaluate_alert_timing.py      # 留出发动机上的人工复核告警提前量回测
   drift_stress_test.py          # 受控输入偏移下的 PSI 监控压力测试
   performance_gate.py           # 基于官方评估 MAE/RMSE 的本地发布门禁
+  evaluate_risk_queue.py        # 离线量化风险队列的精确率与召回率
   data_quality.py               # 单台设备数据质量检查
   data_drift.py                 # PSI 特征分布偏移计算
   risk_queue.py                 # critical/review/monitor 优先级
