@@ -102,7 +102,7 @@ def main() -> None:
 
     st.subheader("风险队列离线证据")
     if queue_status["evaluated"]:
-        point_column, review_evidence_column, note_column = st.columns(3)
+        point_column, review_evidence_column, precision_column, gate_column = st.columns(4)
         point_column.metric(
             "仅 critical 召回率",
             f"{queue_status['point_critical']['recall']:.1%}",
@@ -111,13 +111,22 @@ def main() -> None:
             "人工复核队列召回率",
             f"{queue_status['actionable_queue']['recall']:.1%}",
         )
-        note_column.metric(
+        precision_column.metric(
             "人工复核队列精确率",
             f"{queue_status['actionable_queue']['precision']:.1%}",
+        )
+        gate_column.metric(
+            "召回率门禁",
+            "通过" if queue_status["passed"] else "未通过",
+            f"最低 {queue_status['gates']['min_actionable_queue_recall']:.1%}",
         )
         st.caption(
             f"阈值：{queue_status['threshold']} cycles。{queue_status['message']}"
         )
+        if queue_status["passed"]:
+            st.success("风险队列门禁已通过：人工复核队列召回率满足最低要求。")
+        else:
+            st.warning("风险队列门禁未通过：" + "；".join(queue_status["failures"]))
     else:
         st.info(queue_status["message"])
 
