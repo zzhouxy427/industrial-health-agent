@@ -12,6 +12,7 @@ from data_quality import assess_unit_quality
 from audit_log import load_recent_events
 from model_monitoring import assess_current_batch_drift
 from model_artifact import verify_model_bundle
+from release_audit import build_release_audit
 from release_status import load_release_status
 from risk_queue import build_risk_queue
 from risk_queue_status import load_risk_queue_status
@@ -52,6 +53,7 @@ def main() -> None:
         release_status = load_release_status()
         artifact_status = verify_model_bundle()
         queue_status = load_risk_queue_status()
+        release_audit = build_release_audit()
     except FileNotFoundError:
         st.error("缺少数据或预测文件。请先运行 `python src\\save_predictions.py`。")
         return
@@ -111,6 +113,15 @@ def main() -> None:
         st.success(artifact_status["message"])
     else:
         st.warning(artifact_status["message"])
+
+    if release_audit["passed"]:
+        st.success(
+            "本地发布审计通过：性能、风险队列与模型快照三项检查均通过。"
+        )
+    else:
+        st.warning(
+            "本地发布审计未通过：" + "；".join(release_audit["failures"])
+        )
 
     st.subheader("风险队列离线证据")
     if queue_status["evaluated"]:
