@@ -1,5 +1,7 @@
 # Industrial Health Agent
 
+[![Python tests](https://github.com/zzhouxy427/industrial-health-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/zzhouxy427/industrial-health-agent/actions/workflows/ci.yml)
+
 基于 NASA C-MAPSS FD001 数据集的工业设备健康诊断 Agent 原型。项目以涡扇发动机为对象，预测剩余寿命（RUL），并将预测不确定性、数据质量、输入分布漂移、传感器趋势、维护知识库、人工复核队列和受限 LLM 辅助诊断整合为可追溯的工作流。
 
 > 仅用于研究和学习。数据集为仿真基准，系统不会执行自动停机、维修或任何安全关键操作。
@@ -143,6 +145,10 @@ LLM 只能获得导出的结构化上下文；输出必须提到预测区间、�
 - [系统架构与决策边界](docs/architecture.md)
 - [实验结果与复现说明](docs/experiment_report.md)
 - [当前局限性](docs/limitations.md)
+
+## 参与贡献
+
+欢迎提交可复现、带测试的改进。提交前请阅读 [贡献指南](CONTRIBUTING.md)，尤其注意不得提交 API Key、原始数据和运行产物，也不要让诊断逻辑产生自动停机、维修或其他安全关键指令。
 
 ## 已知限制
 
