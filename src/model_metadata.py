@@ -21,6 +21,13 @@ EVALUATION_SUMMARY = {
     "interval_calibration_adjustment": 6.33,
 }
 
+# Guardrails are deliberately looser than the recorded baseline to tolerate
+# harmless library/platform variation while rejecting material regressions.
+PERFORMANCE_GATES = {
+    "max_official_test_mae": 22.0,
+    "max_official_test_rmse": 30.0,
+}
+
 
 def get_model_metadata() -> dict:
     """Return serializable model provenance for reports and audit logs."""
@@ -29,4 +36,5 @@ def get_model_metadata() -> dict:
         "feature_set": SELECTED_FEATURE_SET,
         "hyperparameters": RUL_MODEL_PARAMETERS.copy(),
         "evaluation_summary": EVALUATION_SUMMARY.copy(),
+        "performance_gates": PERFORMANCE_GATES.copy(),
     }

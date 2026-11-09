@@ -41,6 +41,7 @@ try {
     Invoke-ProjectPython @("src\prepare_data.py")
     Invoke-ProjectPython @("src\save_predictions.py")
     Invoke-ProjectPython @("src\evaluate_official_test.py")
+    Invoke-ProjectPython @("src\performance_gate.py")
     Invoke-ProjectPython @("src\evaluate_prediction_intervals.py")
     Invoke-ProjectPython @("src\evaluate_alert_timing.py")
     Invoke-ProjectPython @("src\monitor_data_drift.py")

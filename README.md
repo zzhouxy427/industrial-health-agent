@@ -9,6 +9,7 @@
 ## 系统能力
 
 - 使用调优后的随机森林回归器预测 RUL，并在官方 FD001 测试集上评估。
+- 在本地完整流水线中执行 MAE/RMSE 发布门禁，阻止明显性能退化的模型结果被发布。
 - 基于随机森林树集合输出 10%–90% 区间，并用训练集独立发动机的 split conformal 校准提升区间可靠性。
 - 通过数据质量检查识别缺失、周期重复/间断和超出训练分布范围的输入。
 - 以 PSI 监控当前批次输入分布相对训练集的偏移，并将结果纳入诊断结论。
@@ -65,6 +66,7 @@ src/
   conformal_calibration.py      # 基于独立训练发动机的区间校准
   evaluate_alert_timing.py      # 留出发动机上的人工复核告警提前量回测
   drift_stress_test.py          # 受控输入偏移下的 PSI 监控压力测试
+  performance_gate.py           # 基于官方评估 MAE/RMSE 的本地发布门禁
   data_quality.py               # 单台设备数据质量检查
   data_drift.py                 # PSI 特征分布偏移计算
   risk_queue.py                 # critical/review/monitor 优先级
