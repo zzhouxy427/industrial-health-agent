@@ -28,6 +28,12 @@ PERFORMANCE_GATES = {
     "max_official_test_rmse": 30.0,
 }
 
+# This protects the human-review triage objective, separately from RUL error.
+# It is evaluated only against labels in the offline FD001 experiment.
+RISK_QUEUE_GATES = {
+    "min_actionable_queue_recall": 0.90,
+}
+
 
 def get_model_metadata() -> dict:
     """Return serializable model provenance for reports and audit logs."""
@@ -37,4 +43,5 @@ def get_model_metadata() -> dict:
         "hyperparameters": RUL_MODEL_PARAMETERS.copy(),
         "evaluation_summary": EVALUATION_SUMMARY.copy(),
         "performance_gates": PERFORMANCE_GATES.copy(),
+        "risk_queue_gates": RISK_QUEUE_GATES.copy(),
     }
