@@ -69,6 +69,18 @@
 
 结果可由 `python src\evaluate_alert_timing.py` 复现，明细保存为 `artifacts/alert_timing_backtest.csv`。这些数字仅说明 FD001 模拟数据上的回测表现：预警意味着进入人工复核流程，而非自动停机、维修或对真实设备告警时限的承诺。
 
+### 3.5 输入分布漂移压力测试
+
+为验证 PSI 监控机制对受控输入变化的敏感性，复制 FD001 测试批次并在不修改原始文件的条件下，分别对 `sensor_4`、`sensor_11` 和 `op_setting_1` 注入训练集标准差 3 倍的加性偏移。该测试不用于模拟真实故障，也不将 PSI 视为准确率下降的直接证据；它只验证统计监控能否将显式注入的输入偏置标识为人工复核信号。
+
+| 场景 | 注入特征 PSI | 监控告警 |
+| --- | ---: | --- |
+| `sensor_4_calibration_offset` | 9.713 | 是 |
+| `sensor_11_calibration_offset` | 9.790 | 是 |
+| `op_setting_1_operating_shift` | 6.756 | 是 |
+
+结果可由 `python src\drift_stress_test.py` 复现，完整产物位于 `artifacts/drift_stress_test.md`。受控场景中原始测试批次本身也存在分布偏移，因此应比较注入特征的 PSI 与最高偏移特征，而不是把“是否告警”误读为模型是否失效。
+
 ## 4. 风险阈值校准
 
 在编号 1–80 的发动机训练、81–100 的发动机验证设置中，模拟 50%、70%、85%、95% 四个观测时刻。漏报成本设为误报的 5 倍：
