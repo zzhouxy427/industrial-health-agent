@@ -136,6 +136,13 @@ python src\llm_agent.py --unit 34
 
 LLM 只能获得导出的结构化上下文；输出必须提到预测区间、传感器趋势、人工复核和研究用途，并且会拒绝包含自动停机或立即维修等危险命令的内容。
 
+## 演示与项目说明
+
+- [3 分钟演示脚本](docs/demo_walkthrough.md)
+- [系统架构与决策边界](docs/architecture.md)
+- [实验结果与复现说明](docs/experiment_report.md)
+- [当前局限性](docs/limitations.md)
+
 ## 已知限制
 
 - 预测区间来自随机森林树集合的经验分位数，**不是经过严格校准的置信区间**。
