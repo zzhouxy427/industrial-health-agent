@@ -41,9 +41,9 @@ def load_test_data() -> pd.DataFrame:
 
 def main() -> None:
     st.set_page_config(
-        page_title="工业健康代理人", page_icon="⚙️", layout="wide"
+        page_title="工业健康 Agent", page_icon="⚙️", layout="wide"
     )
-    st.title("⚙️ 工业健康代理人")
+    st.title("⚙️ 工业健康 Agent")
     st.caption("基于 C-MAPSS FD001 的剩余寿命预测与维护诊断原型")
 
     try:
