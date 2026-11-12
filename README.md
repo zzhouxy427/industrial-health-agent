@@ -160,6 +160,9 @@ LLM 只能获得导出的结构化上下文；输出必须提到预测区间、�
 - [模型卡（用途、指标、风险与发布控制）](docs/model_card.md)
 - [时间窗口特征选择实验](docs/temporal_feature_selection.md)
 - [当前局限性](docs/limitations.md)
+- [最终验收记录](docs/final_acceptance.md)
+- [分阶段学习路线](docs/learning_guide.md)
+- [简历项目描述与面试讲解稿](docs/resume_and_interview.md)
 
 ## 参与贡献
 
